@@ -3,3 +3,6 @@
 
 # macゴミファイル
 .DS_Store
+
+# dbのデータ
+mysql
