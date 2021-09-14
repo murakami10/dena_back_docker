@@ -1,0 +1,30 @@
+version: '3'
+services:
+  app:
+    build: ./app
+    container_name: app
+    ports:
+      - '8080:8080'
+    tty: true
+    volumes:
+      - ./app/src:/app/src
+    networks:
+      - backend
+  db:
+    image: mysql:5.7
+    container_name: db
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - ./mysql:/var/lib/mysql
+      # - ./db:/docker-entrypoint-initdb.d # 初回docker-compose upの時に、db/の.sqlが実行される
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
