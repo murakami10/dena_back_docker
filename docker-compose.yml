@@ -10,6 +10,16 @@ services:
       - ./app/src:/app/src
     networks:
       - backend
+  app_chat:
+    build: ./app/src_chat
+    container_name: app_chat
+    ports:
+      - '3000:3000'
+    tty: true
+    volumes:
+      - ./app/src_chat:/app/src
+    networks:
+      - backend
   db:
     image: mysql:5.7
     container_name: db
