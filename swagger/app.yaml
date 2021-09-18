@@ -21,8 +21,8 @@ paths:
           schema:
             $ref: "#/definitions/SendContactRequest"
       responses:
-        "200":
-          description: OK
+        "201":
+          description: "Created"
       tags:
         - Contact
 
