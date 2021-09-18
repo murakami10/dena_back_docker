@@ -11,6 +11,11 @@ $ docker-compose up
 docker exec -it <go-container-id> go mod tidy
 ```
 
+## swagger 
+```
+docker-compose  -f docker-compose-swagger.yml up -d
+```
+
 ## MySQL で DB やテーブルが生やされない時
 
 `mysql/` ディレクトリを消す
