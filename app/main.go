@@ -23,6 +23,7 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!!")
 	})
 
+	// TODO 疎通確認用なので後で消す
 	e.GET("/users/1", func(c echo.Context) error {
 		query := "select id, username from users where id=1"
 		rows, err := sqlHandler.QueryContext(c.Request().Context(), query)
