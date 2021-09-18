@@ -20,6 +20,7 @@ func main() {
 		panic(1)
 	}
 
+	// TODO 内容がダミーなのでなんとかする
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!!")
 	})
@@ -35,5 +36,7 @@ func main() {
 		}
 		return c.String(http.StatusOK, fmt.Sprintf("id: %d, username: %s", user.Id, user.Username))
 	})
+
+	// Start
 	e.Logger.Fatal(e.Start(":8080"))
 }
