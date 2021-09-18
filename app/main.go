@@ -20,7 +20,9 @@ func main() {
 		panic(1)
 	}
 
-	contactHandler := handler.NewContactHandler(sqlHandler)
+	contactHandler := handler.NewContactHandler(
+		repository.NewContactRepository(sqlHandler),
+	)
 
 	// TODO 内容がダミーなので後で消す
 	e.GET("/", func(c echo.Context) error {
