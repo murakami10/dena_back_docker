@@ -5,6 +5,6 @@ CREATE TABLE `users` (
     `username` VARCHAR(20) NOT NULL,
     `display_name` VARCHAR(20) NOT NULL,
     `twitter_user_id` VARCHAR(255) NOT NULL,
-    `icon_url` VALUES(255),
+    `icon_url` VARCHAR(255),
     PRIMARY KEY (id)
 );

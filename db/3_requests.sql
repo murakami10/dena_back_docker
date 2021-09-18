@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `requests`
+DROP TABLE IF EXISTS `requests`;
 
 CREATE TABLE `requests` (
     `id`   INT NOT NULL AUTO_INCREMENT,
