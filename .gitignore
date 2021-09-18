@@ -6,3 +6,5 @@
 
 # dbのデータ
 mysql
+
+app/src/out/
