@@ -19,7 +19,7 @@ func NewUserRepository(sqlHandler *sql_handler.SQLHandler) *UserRepository {
 func (u UserRepository) GetUser(ctx context.Context, userID uint64) (*entity.User, error) {
 	var user entity.User
 
-	query := "select id, username from users where id=?"
+	query := "select id, username, display_name, twitter_user_id, icon_url from users where id=?"
 	rows, err := u.sqlHandler.QueryContext(ctx, query, userID)
 
 	if err != nil {
@@ -27,7 +27,7 @@ func (u UserRepository) GetUser(ctx context.Context, userID uint64) (*entity.Use
 	}
 
 	rows.Next()
-	err = rows.Scan(&user.ID, &user.Username)
+	err = rows.Scan(&user.ID, &user.Username, &user.DisplayName, &user.TwitterUserID, &user.IconURL)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (u UserRepository) GetUser(ctx context.Context, userID uint64) (*entity.Use
 func (u UserRepository) GetUserByTwitterID(ctx context.Context, twitterID string) (*entity.User, error) {
 	var user entity.User
 
-	query := "select id, username from users where twitter_user_id=?"
+	query := "select id, username, display_name, twitter_user_id, icon_url from users where twitter_user_id=?"
 	rows, err := u.sqlHandler.QueryContext(ctx, query, twitterID)
 
 	if err != nil {
@@ -45,7 +45,7 @@ func (u UserRepository) GetUserByTwitterID(ctx context.Context, twitterID string
 	}
 
 	rows.Next()
-	err = rows.Scan(&user.ID, &user.Username)
+	err = rows.Scan(&user.ID, &user.Username, &user.DisplayName, &user.TwitterUserID, &user.IconURL)
 	if err != nil {
 		return nil, err
 	}
