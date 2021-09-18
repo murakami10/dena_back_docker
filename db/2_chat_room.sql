@@ -16,13 +16,12 @@ CREATE TABLE `room_members` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
 );
 
-
 DROP TABLE IF EXISTS `chats`;
 
 CREATE TABLE `chats` (
     `id`   INT NOT NULL AUTO_INCREMENT,
-    `room_id` INT NOT NULL, -- rooms.id
-    `sender_id` INT NOT NULL, -- users.id
+    `room_id` INT NOT NULL, 
+    `sender_id` INT NOT NULL,
     `text` text NOT NULL,
     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
