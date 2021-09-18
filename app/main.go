@@ -25,6 +25,11 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!!")
 	})
 
+	// TODO issue-7
+	e.GET("/contact", func(c echo.Context) error {
+		return c.String(http.StatusOK, "OK")
+	})
+
 	// TODO 疎通確認用なので後で消す
 	e.GET("/users/1", func(c echo.Context) error {
 
