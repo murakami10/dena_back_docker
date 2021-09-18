@@ -3,12 +3,14 @@ package main
 import (
 	"net/http"
 
-	"dena-hackathon21/entity"
+	"dena-hackathon21/auth"
+	// "dena-hackathon21/entity"
 	"dena-hackathon21/repository"
 	"dena-hackathon21/sql_handler"
 	"dena-hackathon21/twitter_handler"
 	"fmt"
 	"github.com/labstack/echo"
+	// "os"
 )
 
 func main() {
@@ -63,12 +65,34 @@ func main() {
 
 		twitterHandler, _ := twitter_handler.NewTwitterHandler()
 		token, _ := twitterHandler.GetAccessToken(oauthToken, oauthSecret, oauthVerifier)
-		twitterUser, _ := twitterHandler.GetUserByToken(token)
+		_, err := twitterHandler.GetUserByToken(token)
 
-		return c.JSON(http.StatusOK, map[string]entity.TwitterUser{
-			"user": *twitterUser,
-		})
-		// return c.String(http.StatusOK, fmt.Sprintf("token: %s, secret:%s", token.Token, token.TokenSecret))
+		if err != nil {
+			return c.String(500, "not auth")
+		}
+
+		jwtHandler, _ := auth.NewJWTHandler()
+		jwtToken, _ := jwtHandler.GenerateJWTToken(1)
+
+		return c.String(http.StatusOK, jwtToken)
+	})
+
+	e.GET("/authenticate", func(c echo.Context) error {
+		token := c.QueryParam("token")
+
+		jwtHandler, err := auth.NewJWTHandler()
+		if err != nil {
+			fmt.Println(err.Error())
+			return c.String(400, err.Error())
+		}
+		fmt.Println(token)
+		valid, err := jwtHandler.Valid(token)
+		if !valid {
+			fmt.Println(err.Error())
+			return c.String(403, err.Error())
+		}
+
+		return c.String(http.StatusOK, "ok")
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))

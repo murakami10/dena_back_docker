@@ -1,16 +1,12 @@
 package twitter_handler
 
 import (
-	// "context"
 	"dena-hackathon21/entity"
-	"fmt"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	oauth1Twitter "github.com/dghubble/oauth1/twitter"
-	"os"
-	// "io/ioutil"
-	// "net/http"
 	"net/url"
+	"os"
 )
 
 type TwitterHandler struct {
@@ -56,8 +52,11 @@ func (t TwitterHandler) GetUserByToken(token *oauth1.Token) (*entity.TwitterUser
 		SkipStatus:   twitter.Bool(true),
 		IncludeEmail: twitter.Bool(true),
 	}
-	user, _, _ := client.Accounts.VerifyCredentials(verifyParams)
-	fmt.Printf("User's ACCOUNT:\n%+v\n", user)
+	user, _, err := client.Accounts.VerifyCredentials(verifyParams)
+	if err != nil {
+		return nil, err
+	}
+
 	return &entity.TwitterUser{
 		ID:              user.IDStr,
 		Name:            user.Name,
