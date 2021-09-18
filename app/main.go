@@ -9,13 +9,14 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"os"
 )
 
 func main() {
 	e := echo.New()
 
-	// TODO 環境変数から取りたい
-	sqlHandler, err := sql_handler.NewHandler("user:password@tcp(db:3306)/test_database")
+	sqlAuthentication := fmt.Sprintf("%s:%s@tcp(%s)/%s", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
+	sqlHandler, err := sql_handler.NewHandler(sqlAuthentication)
 
 	if err != nil {
 		fmt.Printf("connect error: %s\n", err.Error())
