@@ -2,9 +2,11 @@ package twitter_handler
 
 import (
 	// "context"
-	// "fmt"
+	"dena-hackathon21/entity"
+	"fmt"
+	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
-	"github.com/dghubble/oauth1/twitter"
+	oauth1Twitter "github.com/dghubble/oauth1/twitter"
 	"os"
 	// "io/ioutil"
 	// "net/http"
@@ -20,7 +22,7 @@ func NewTwitterHandler() (*TwitterHandler, error) {
 		ConsumerKey:    os.Getenv("CONSUMER_KEY"),
 		ConsumerSecret: os.Getenv("CONSUMER_SECERT"),
 		CallbackURL:    os.Getenv("CALLBACK_URL"),
-		Endpoint:       twitter.AuthorizeEndpoint,
+		Endpoint:       oauth1Twitter.AuthorizeEndpoint,
 	}
 	return &TwitterHandler{
 		oauth1Config: config,
@@ -43,4 +45,24 @@ func (t TwitterHandler) GetAccessToken(requestToken string, requestSecret string
 	token := oauth1.NewToken(accessToken, accessSecret)
 
 	return token, nil
+}
+
+func (t TwitterHandler) GetUserByToken(token *oauth1.Token) (*entity.TwitterUser, error) {
+	httpClient := t.oauth1Config.Client(oauth1.NoContext, token)
+	client := twitter.NewClient(httpClient)
+
+	// TODO 一旦コピペしたので後でせいさする
+	verifyParams := &twitter.AccountVerifyParams{
+		SkipStatus:   twitter.Bool(true),
+		IncludeEmail: twitter.Bool(true),
+	}
+	user, _, _ := client.Accounts.VerifyCredentials(verifyParams)
+	fmt.Printf("User's ACCOUNT:\n%+v\n", user)
+	return &entity.TwitterUser{
+		ID:              user.IDStr,
+		Name:            user.Name,
+		Username:        user.ScreenName,
+		Description:     user.Description,
+		ProfileImageURL: user.ProfileImageURL,
+	}, nil
 }

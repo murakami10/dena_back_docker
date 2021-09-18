@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"dena-hackathon21/entity"
 	"dena-hackathon21/repository"
 	"dena-hackathon21/sql_handler"
 	"dena-hackathon21/twitter_handler"
@@ -62,9 +63,11 @@ func main() {
 
 		twitterHandler, _ := twitter_handler.NewTwitterHandler()
 		token, _ := twitterHandler.GetAccessToken(oauthToken, oauthSecret, oauthVerifier)
-		// userInfo, _ := twitterHandler.GetTwitterUserInfo(c.Request().Context(), token)
+		twitterUser, _ := twitterHandler.GetUserByToken(token)
 
-		return c.String(http.StatusOK, token.Token)
+		return c.JSON(http.StatusOK, map[string]entity.TwitterUser{
+			"user": *twitterUser,
+		})
 		// return c.String(http.StatusOK, fmt.Sprintf("token: %s, secret:%s", token.Token, token.TokenSecret))
 	})
 
