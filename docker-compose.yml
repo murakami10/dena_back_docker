@@ -11,13 +11,13 @@ services:
     networks:
       - backend
   app_chat:
-    build: ./app/src_chat
+    build: ./app_chat
     container_name: app_chat
     ports:
       - '3000:3000'
     tty: true
     volumes:
-      - ./app/src_chat:/app/src
+      - ./app_chat/serve.js:/app/serve.js
     networks:
       - backend
   db:
