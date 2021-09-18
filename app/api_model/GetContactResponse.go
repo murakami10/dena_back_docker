@@ -9,7 +9,7 @@ type GetContactResponse struct {
 	PastMessageList	 []ContactItem `json:"past_message_list"`
 }
 
-type ConctactItem struct {
+type ContactItem struct {
 	SenderID uint64 `json:"sender_id"`
 	Message string `json:"message"`
 	RoomID uint64 `json:"room_id"`
