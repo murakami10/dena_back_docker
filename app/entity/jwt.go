@@ -3,7 +3,6 @@ package entity
 import (
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
-	// "strconv"
 )
 
 type JWT struct {
@@ -49,18 +48,6 @@ func ParseJwtToken(signedString string, signingMethod jwt.SigningMethod, secret 
 	if err != nil {
 		return nil, err
 	}
-
-	// if err != nil {
-	// 	if ve, ok := err.(*jwt.ValidationError); ok {
-	// 		if ve.Errors&jwt.ValidationErrorExpired != 0 {
-	// 			return nil, err.Wrapf(err, "%s is expired", signedString)
-	// 		} else {
-	// 			return nil, err.Wrapf(err, "%s is invalid", signedString)
-	// 		}
-	// 	} else {
-	// 		return nil, err.Wrapf(err, "%s is invalid", signedString)
-	// 	}
-	// }
 
 	if token == nil {
 		return nil, fmt.Errorf("not found token in %s:", signedString)
