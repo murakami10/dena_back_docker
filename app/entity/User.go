@@ -1,9 +1,9 @@
 package entity
 
 type User struct {
-	Id            uint64
-	Username      string
-	DisplayName   string
-	TwitterUserId string
-	IconUrl       string
+	ID            uint64 `json:"id"`
+	Username      string `json:"username"`
+	DisplayName   string `json:"display_name"`
+	TwitterUserID string `json:"-"`
+	IconURL       string `json:"icon_url"`
 }
