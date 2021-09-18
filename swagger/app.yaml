@@ -1,50 +1,25 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0
-  title: Sample API
-  description: >-
-    A sample API that uses a sample-site as an example to demonstrate features in
-    the OpenAPI 3.0 specification
-servers:
-  - url: 'http://localhost:8003'
+  description: ""
+  version: "1.0.0"
+  title: "melt"
+
 paths:
-  /users:
-    get:
-      description: >
-        Returns all users
-      operationId: findUsers
-      parameters:
-        - name: tags
-          in: query
-          description: tags to filter by
-          required: false
-          style: form
-          schema:
-            type: array
-            items:
-              type: string
-        - name: limit
-          in: query
-          description: maximum number of results to return
-          required: false
-          schema:
-            type: integer
-            format: int32
+  /contact:
+    post:
+      description: "Send contact."
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendContactRequest"
       responses:
-        '200':
-          description: user response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+        '201':
+          description: "Created"
+      tags:
+        - Contact
 
   /api/users/twitter_signin_url:
     get:
@@ -176,16 +151,13 @@ components:
           type: "string"
           description: "icon url"
           example: "http://example.com/icon.png"
-    Error:
-      type: "object"
+
+    SendContactRequest:
+      type: object
+      description: SendContact
       properties:
-        code:
-          type: "integer"
-          format: "int32"
-        type:
-          type: "string"
+        request_user_id_list:
+          type: array
+          items: { type: integer }
         message:
-          type: "string"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+          type: string
