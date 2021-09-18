@@ -7,15 +7,6 @@
   <body>
     <h1>SocketIOチャット</h1>
 
-    <!-- 発言フォーム -->
-    <form id="frm-post">
-      <input type="text" id="msg" />
-      <button>送信</button>
-    </form>
-
-    <!-- 発言ログ -->
-    <ul id="msglist"></ul>
-
     <!-- <script src="/socket.io/socket.io.js"></script> -->
     <script
       src="https://cdn.socket.io/4.1.2/socket.io.min.js"
@@ -30,41 +21,11 @@
       // localhostの3000ポートに繋げる
       const socket = io('http://localhost:3000', { transports: ['websocket'] });
 
-      document.querySelector('#frm-post').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const msg = document.querySelector('#msg');
-        if (msg.value === '') {
-          return false;
-        }
-
-        // Socket.ioサーバへ送信 postというエンドポイントに送る
-        socket.emit('post', { text: msg.value });
-        // Socket.ioサーバへ送信 postというエンドポイントに送る
-        // socket.emit('list-message', { user_id: aaaa, access_token: aaaa });
-
-        msg.value = '';
+      // joinするときの動作
+      // socket.emit('join', { user_id: 1, room: 1 });
+      socket.on('join-response', (msg) => {
+        console.log(msg);
       });
-
-      // member-post名前で返ってくる
-      socket.on('member-post', (msg) => {
-        const list = document.querySelector('#msglist');
-        const li = document.createElement('li');
-        li.innerHTML = `${msg.text}`;
-        list.insertBefore(li, list.firstChild);
-      });
-
-      //   list-message-responseというものが返ってくる
-      //   socket.on('list-message-response', (msg) => {});
-
-      // Socket.ioサーバへ送信 postというエンドポイントに送る
-      // socket.emit('post-text', {
-      //   text: msg.value,
-      //   user_id: "11111"
-      // });
-
-      window.onload = () => {
-        document.querySelector('#msg').focus();
-      };
     </script>
   </body>
 </html>
