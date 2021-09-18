@@ -7,9 +7,10 @@ services:
       - '8080:8080'
     tty: true
     volumes:
-      - ./app/src:/app/src
+      - ./app:/app
     networks:
       - backend
+    command: air
   app_chat:
     build: ./app_chat
     container_name: app_chat
@@ -31,7 +32,7 @@ services:
       TZ: 'Asia/Tokyo'
     volumes:
       - ./mysql:/var/lib/mysql
-      # - ./db:/docker-entrypoint-initdb.d # 初回docker-compose upの時に、db/の.sqlが実行される
+      - ./db:/docker-entrypoint-initdb.d
     networks:
       - backend
 

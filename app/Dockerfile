@@ -1,8 +1,9 @@
 FROM golang:1.16.8-buster
 
-WORKDIR /app/src
+WORKDIR /app
 
-COPY ./src/go.mod ./src/go.sum ./
+COPY ./go.mod ./go.sum ./
+RUN go get -u github.com/cosmtrek/air
 RUN go mod download
 
 # とりあえず起動したらサーバ動いているように
