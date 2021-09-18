@@ -9,3 +9,4 @@ mysql
 
 node_modules/
 app/out/
+*.env

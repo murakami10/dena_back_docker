@@ -5,6 +5,7 @@ import (
 
 	"dena-hackathon21/repository"
 	"dena-hackathon21/sql_handler"
+	"dena-hackathon21/twitter_handler"
 	"fmt"
 	"github.com/labstack/echo"
 )
@@ -34,6 +35,37 @@ func main() {
 			return c.String(500, fmt.Sprintf("db scan error: %s", err.Error()))
 		}
 		return c.String(http.StatusOK, fmt.Sprintf("id: %d, username: %s", user.Id, user.Username))
+	})
+
+	e.GET("/request_url", func(c echo.Context) error {
+
+		twitterHandler, _ := twitter_handler.NewTwitterHandler()
+
+		token, secret, _ := twitterHandler.GetRequestToken()
+		url, _ := twitterHandler.GetAuthorizationURL(token)
+		fmt.Println(secret)
+		return c.String(http.StatusOK, fmt.Sprintf("url:%s, secret:%s", url.String(), secret))
+	})
+
+	e.GET("/twitter_login", func(c echo.Context) error {
+		oauthToken := c.QueryParam("oauth_token")
+		oauthVerifier := c.QueryParam("oauth_verifier")
+		url := fmt.Sprintf("localhost:8080/token?oauth_token=%s&oauth_verifier=%s&oauth_secret=?", oauthToken, oauthVerifier)
+
+		return c.String(http.StatusOK, fmt.Sprintf("token: %s, verifier: %s, url: %s", oauthToken, oauthVerifier, url))
+	})
+
+	e.GET("/token", func(c echo.Context) error {
+		oauthToken := c.QueryParam("oauth_token")
+		oauthVerifier := c.QueryParam("oauth_verifier")
+		oauthSecret := c.QueryParam("oauth_secret")
+
+		twitterHandler, _ := twitter_handler.NewTwitterHandler()
+		token, _ := twitterHandler.GetAccessToken(oauthToken, oauthSecret, oauthVerifier)
+		// userInfo, _ := twitterHandler.GetTwitterUserInfo(c.Request().Context(), token)
+
+		return c.String(http.StatusOK, token.Token)
+		// return c.String(http.StatusOK, fmt.Sprintf("token: %s, secret:%s", token.Token, token.TokenSecret))
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
