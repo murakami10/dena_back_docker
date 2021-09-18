@@ -1,9 +1,16 @@
 ## 初回手順
 
-1. `docker-compose up -d`で docker を起動する
-2. 続く...
+```
+$ docker-compose build
+$ docker-compose up
+```
 
-## FAQ
+## go で新しい module を追加した時
 
-Q. `test_batabase` が生やされない
-A. `mysql/` ディレクトリを消す
+```
+docker exec -it <go-container-id> go mod tidy
+```
+
+## MySQL で DB やテーブルが生やされない時
+
+`mysql/` ディレクトリを消す

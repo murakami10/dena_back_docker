@@ -8,4 +8,4 @@
 mysql
 
 node_modules/
-app/src/out/
+app/out/
