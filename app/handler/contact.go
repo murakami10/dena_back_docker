@@ -33,5 +33,13 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /contact Error: %s", err.Error()))
 		}
 	}
-	return c.String(http.StatusCreated, "OK")
+	return c.String(http.StatusCreated, "Created")
+}
+
+func (ch *ContactHandler) Get(c echo.Context) error {
+	//TODO 後でjwt使った関数に置き換える
+	// var user_id uint64 = 1
+
+	// ch.contactRepository.GetReceivedContact(c.Request().Context(), user_id)
+	return c.String(http.StatusOK, "OK")
 }
