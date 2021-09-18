@@ -62,7 +62,7 @@ definitions:
     title: ContactItem
     type: object
     properties:
-      send_user_id:
+      sender_id:
         type: integer
       message:
         type: string
