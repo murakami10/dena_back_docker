@@ -33,7 +33,7 @@ type TwitterAuthToken struct {
 
 func (u UserHandler) SignIn(c echo.Context) error {
 	tat := TwitterAuthToken{}
-	if err := c.Bind(tat); err != nil {
+	if err := c.Bind(&tat); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
@@ -52,7 +52,10 @@ func (u UserHandler) SignIn(c echo.Context) error {
 			TwitterUserID: twitterUser.ID,
 			IconURL:       twitterUser.ProfileImageURL,
 		}
-		user, _ = u.userRepository.CreateUser(c.Request().Context(), newUser)
+		user, err = u.userRepository.CreateUser(c.Request().Context(), newUser)
+		if err != nil {
+			return c.String(500, err.Error())
+		}
 	}
 
 	jwtToken, _ := u.jwtHandler.GenerateJWTToken(user.ID)

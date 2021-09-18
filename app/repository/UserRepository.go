@@ -4,6 +4,7 @@ import (
 	"context"
 	"dena-hackathon21/entity"
 	"dena-hackathon21/sql_handler"
+	"fmt"
 )
 
 type UserRepository struct {
@@ -53,23 +54,18 @@ func (u UserRepository) GetUserByTwitterID(ctx context.Context, twitterID string
 }
 
 func (u UserRepository) CreateUser(ctx context.Context, user entity.User) (*entity.User, error) {
-	query := `insert into Users (username, display_name, twitter_user_id, icon_url)　values (?, ?, ?, ?)`
+	query := `insert into Users (username, display_name, twitter_user_id, icon_url) values (?, ?, ?, ?)`
 
 	_, err := u.sqlHandler.QueryContext(ctx, query, user.Username, user.DisplayName, user.TwitterUserID, user.IconURL)
 
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
 
-	query = "SELECT LAST_INSERT_ID()"
-	rows, err := u.sqlHandler.QueryContext(ctx, query)
+	newUser, err := u.GetUserByTwitterID(ctx, user.TwitterUserID)
 	if err != nil {
 		return nil, err
 	}
-	rows.Next()
-	err = rows.Scan(&user.ID)
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
+	return newUser, nil
 }
