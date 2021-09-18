@@ -41,13 +41,12 @@ func (ch *ContactHandler) Get(c echo.Context) error {
 	var user_id uint64 = 1
 
 	// 受信ユーザ、受信メッセージ、受信日時を取得
-	contactItems, err := ch.contactRepository.GetReceivedContact(c.Request().Context(), user_id)
+	_, err := ch.contactRepository.GetReceivedContact(c.Request().Context(), user_id)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("GET /api/contact Error: %s", err.Error()))
 	}
 
-	var response := &api_model.GetContactResponse{
-	}
+	res := &api_model.GetContactResponse{}
 
-	return c.JSON(http.StatusOK, "OK")
+	return c.JSON(http.StatusOK, res)
 }
