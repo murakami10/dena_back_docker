@@ -11,6 +11,16 @@ services:
     networks:
       - backend
     command: air
+  app_chat:
+    build: ./app_chat
+    container_name: app_chat
+    ports:
+      - '3000:3000'
+    tty: true
+    volumes:
+      - ./app_chat/serve.js:/app/serve.js
+    networks:
+      - backend
   db:
     image: mysql:5.7
     container_name: db
