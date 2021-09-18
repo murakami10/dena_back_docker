@@ -1,5 +1,9 @@
 package api_model
 
+import (
+	"time"
+)
+
 type ConctactItem struct {
 	SenderID uint64 `json:"sender_id"`
 	Message string `json:"message"`
