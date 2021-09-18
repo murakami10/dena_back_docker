@@ -10,6 +10,7 @@ services:
       - ./app/src:/app/src
     networks:
       - backend
+    command: air
   db:
     image: mysql:5.7
     container_name: db
@@ -21,7 +22,7 @@ services:
       TZ: 'Asia/Tokyo'
     volumes:
       - ./mysql:/var/lib/mysql
-      # - ./db:/docker-entrypoint-initdb.d # 初回docker-compose upの時に、db/の.sqlが実行される
+      - ./db:/docker-entrypoint-initdb.d
     networks:
       - backend
 
