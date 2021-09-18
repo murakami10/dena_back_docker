@@ -34,7 +34,7 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 		return err
 	}
 
-	for _, receiver_id := range req.AddressList {
+	for _, receiver_id := range req.RequestUseIDList {
 		contactRepository := repository.NewContactRepository(sqlHandler)
 		err := contactRepository.SendContact(c.Request().Context(), sender_id, receiver_id, req.Message)
 		if err != nil {

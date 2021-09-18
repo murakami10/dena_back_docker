@@ -1,6 +1,6 @@
 package api_model
 
 type SendContactRequest struct {
-	AddressList []uint64 `json:"address_list"`
+	RequestUseIDList []uint64 `json:"request_user_id_list"`
 	Message string `json:"message"`
 }

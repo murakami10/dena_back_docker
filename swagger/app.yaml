@@ -31,7 +31,7 @@ definitions:
     title: SendContact
     type: object
     properties:
-      address_list:
+      request_user_id_list:
         type: array
         items: { type: integer }
       message:
