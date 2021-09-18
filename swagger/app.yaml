@@ -9,7 +9,7 @@ paths:
     post:
       description: "Send contact."
       requestBody:
-        description: Optional description in *Markdown*
+        description: requests data
         required: true
         content:
           application/json:
@@ -70,7 +70,7 @@ paths:
       description: signup
       operationId: signup
       requestBody:
-        description: Optional description in *Markdown*
+        description: oauth tokens
         required: true
         content:
           application/json:
@@ -102,7 +102,7 @@ paths:
       description: signin
       operationId: signin
       requestBody:
-        description: Optional description in *Markdown*
+        description:  oauth tokens
         required: true
         content:
           application/json:
