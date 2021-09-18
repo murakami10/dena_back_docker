@@ -6,10 +6,9 @@ info:
 
 host: "localhost:8080"
 
-basePath: "/v2"
+basePath: "/api"
 
 schemes:
-  - "https"
   - "http"
 
 paths:
@@ -17,7 +16,7 @@ paths:
     post:
       description: "Send contact."
       parameters:
-        - name: a
+        - name: "request"
           in: body
           schema:
             $ref: "#/definitions/SendContactRequest"

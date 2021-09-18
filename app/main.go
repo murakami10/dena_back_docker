@@ -22,15 +22,15 @@ func main() {
 
 	contactHandler := handler.NewContactHandler(sqlHandler)
 
-	// TODO 内容がダミーなのでなんとかする
+	// TODO 内容がダミーなので後で消す
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!!")
 	})
 
-	e.POST("/contact", contactHandler.Send)
+	e.POST("/api/contact", contactHandler.Send)
 
 	// TODO issue-7
-	e.GET("/contact", func(c echo.Context) error {
+	e.GET("/api/contact", func(c echo.Context) error {
 		return c.String(http.StatusOK, "OK")
 	})
 
