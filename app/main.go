@@ -61,5 +61,5 @@ func main() {
 	e.POST("/api/users/signin", userHandler.SignIn)
 	e.POST("/api/users/signup", userHandler.SignIn)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }
