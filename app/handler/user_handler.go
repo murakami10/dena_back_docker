@@ -119,7 +119,6 @@ func (u UserHandler) GetFrends(c echo.Context) error {
 		friends = make([]entity.User, 0)
 	}
 
-	fmt.Printf("%v\n", friends)
 	return c.JSON(http.StatusOK, getFriendsResponse{
 		User:    *user,
 		Friends: friends,
