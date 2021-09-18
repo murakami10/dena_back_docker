@@ -15,8 +15,9 @@ CREATE TABLE `chats` (
     `room_id` INT NOT NULL, -- rooms.id
     `sender_id` INT NOT NULL, -- users.id
     `text` text NOT NULL,
-    `created_at` datetime NOT NULL,
-    PRIMARY KEY (id)
+    `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`),
+    FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`),
+    INDEX (`room_id`)
 );
-
--- TODO rooms.id index
