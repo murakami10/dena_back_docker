@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"dena-hackathon21/api_model"
 	"dena-hackathon21/sql_handler"
 )
 
@@ -25,4 +26,8 @@ func (c ContactRepository) SendContact(ctx context.Context, sender_id uint64, re
 		return err
 	}
 	return nil
+}
+
+func (c ContactRepository) GetReceivedContact(ctx context.Context, sender_id uint64) ([]*api_model.ContactItem, error) {
+	return nil, nil
 }
