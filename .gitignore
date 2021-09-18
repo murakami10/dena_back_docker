@@ -7,4 +7,5 @@
 # dbのデータ
 mysql
 
+node_modules/
 app/src/out/
