@@ -30,7 +30,8 @@ func (t TwitterHandler) GetRequestToken() (string, string, error) {
 	return requestToken, requestSecret, err
 }
 
-func (t TwitterHandler) GetAuthorizationURL(requestToken string) (*url.URL, error) {
+func (t TwitterHandler) GetAuthorizationURL(requestToken string, callbackURL string) (*url.URL, error) {
+	t.oauth1Config.CallbackURL = callbackURL
 	authorizationURL, err := t.oauth1Config.AuthorizationURL(requestToken)
 	return authorizationURL, err
 }

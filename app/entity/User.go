@@ -1,9 +1,9 @@
 package entity
 
 type User struct {
-	Id            uint64
+	ID            uint64
 	Username      string
 	DisplayName   string
-	TwitterUserId string
-	IconUrl       string
+	TwitterUserID string
+	IconURL       string
 }

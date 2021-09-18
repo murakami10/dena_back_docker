@@ -4,14 +4,21 @@ import (
 	"net/http"
 
 	"dena-hackathon21/auth"
-	// "dena-hackathon21/entity"
+	"dena-hackathon21/entity"
 	"dena-hackathon21/repository"
 	"dena-hackathon21/sql_handler"
 	"dena-hackathon21/twitter_handler"
 	"fmt"
 	"github.com/labstack/echo"
-	// "os"
+	"os"
+	"time"
 )
+
+type TwitterAuthToken struct {
+	OAuthToken    string `json:"oauth_token"`
+	OAuthSecret   string `json:"oauth_secret"`
+	OAuthVerifier string `json:"oauth_verifier"`
+}
 
 func main() {
 	e := echo.New()
@@ -37,17 +44,36 @@ func main() {
 		if err != nil {
 			return c.String(500, fmt.Sprintf("db scan error: %s", err.Error()))
 		}
-		return c.String(http.StatusOK, fmt.Sprintf("id: %d, username: %s", user.Id, user.Username))
+		return c.String(http.StatusOK, fmt.Sprintf("id: %d, username: %s", user.ID, user.Username))
 	})
 
-	e.GET("/request_url", func(c echo.Context) error {
+	e.GET("/api/users/twitter_signin_url", func(c echo.Context) error {
 
 		twitterHandler, _ := twitter_handler.NewTwitterHandler()
 
 		token, secret, _ := twitterHandler.GetRequestToken()
-		url, _ := twitterHandler.GetAuthorizationURL(token)
-		fmt.Println(secret)
-		return c.String(http.StatusOK, fmt.Sprintf("url:%s, secret:%s", url.String(), secret))
+		url, _ := twitterHandler.GetAuthorizationURL(token, os.Getenv("SIGNIN_CALLBACK_URL"))
+		jsonMap := map[string]string{
+			"url":          url.String(),
+			"oauth_token":  token,
+			"oauth_secret": secret,
+		}
+
+		return c.JSON(http.StatusOK, jsonMap)
+	})
+
+	e.GET("/api/users/twitter_signup_url", func(c echo.Context) error {
+
+		twitterHandler, _ := twitter_handler.NewTwitterHandler()
+
+		token, secret, _ := twitterHandler.GetRequestToken()
+		url, _ := twitterHandler.GetAuthorizationURL(token, os.Getenv("SIGNUP_CALLBACK_URL"))
+		jsonMap := map[string]string{
+			"url":          url.String(),
+			"oauth_token":  token,
+			"oauth_secret": secret,
+		}
+		return c.JSON(http.StatusOK, jsonMap)
 	})
 
 	e.GET("/twitter_login", func(c echo.Context) error {
@@ -58,41 +84,92 @@ func main() {
 		return c.String(http.StatusOK, fmt.Sprintf("token: %s, verifier: %s, url: %s", oauthToken, oauthVerifier, url))
 	})
 
-	e.GET("/token", func(c echo.Context) error {
-		oauthToken := c.QueryParam("oauth_token")
-		oauthVerifier := c.QueryParam("oauth_verifier")
-		oauthSecret := c.QueryParam("oauth_secret")
+	e.POST("/api/users/signin", func(c echo.Context) error {
+
+		tat := TwitterAuthToken{}
+		if err = c.Bind(tat); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
 
 		twitterHandler, _ := twitter_handler.NewTwitterHandler()
-		token, _ := twitterHandler.GetAccessToken(oauthToken, oauthSecret, oauthVerifier)
-		_, err := twitterHandler.GetUserByToken(token)
+		token, _ := twitterHandler.GetAccessToken(tat.OAuthToken, tat.OAuthSecret, tat.OAuthVerifier)
+		twitterUser, err := twitterHandler.GetUserByToken(token)
 
 		if err != nil {
-			return c.String(500, "not auth")
+			return c.String(401, "not auth")
+		}
+
+		userRepository := repository.NewUserRepository(sqlHandler)
+		user, _ := userRepository.GetUserByTwitterID(c.Request().Context(), twitterUser.ID)
+
+		if user == nil {
+			newUser := entity.User{
+				Username:      twitterUser.Username,
+				DisplayName:   twitterUser.Name,
+				TwitterUserID: twitterUser.ID,
+				IconURL:       twitterUser.ProfileImageURL,
+			}
+			user, _ = userRepository.GetUserByTwitterID(c.Request().Context(), newUser)
 		}
 
 		jwtHandler, _ := auth.NewJWTHandler()
-		jwtToken, _ := jwtHandler.GenerateJWTToken(1)
+		jwtToken, _ := jwtHandler.GenerateJWTToken(user.ID)
 
-		return c.String(http.StatusOK, jwtToken)
+		// set cookie
+		cookie := new(http.Cookie)
+		cookie.Name = "token"
+		cookie.Value = jwtToken
+		cookie.Expires = time.Now().Add(24 * time.Hour)
+		c.SetCookie(cookie)
+
+		jsonMap := map[string]entity.User{
+			"user": *user,
+		}
+		return c.JSON(http.StatusOK, jsonMap)
 	})
 
-	e.GET("/authenticate", func(c echo.Context) error {
-		token := c.QueryParam("token")
+	e.POST("/api/users/signup", func(c echo.Context) error {
 
-		jwtHandler, err := auth.NewJWTHandler()
+		tat := TwitterAuthToken{}
+		if err = c.Bind(tat); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+
+		twitterHandler, _ := twitter_handler.NewTwitterHandler()
+		token, _ := twitterHandler.GetAccessToken(tat.OAuthToken, tat.OAuthSecret, tat.OAuthVerifier)
+		twitterUser, err := twitterHandler.GetUserByToken(token)
+
 		if err != nil {
-			fmt.Println(err.Error())
-			return c.String(400, err.Error())
-		}
-		fmt.Println(token)
-		valid, err := jwtHandler.Valid(token)
-		if !valid {
-			fmt.Println(err.Error())
-			return c.String(403, err.Error())
+			return c.String(401, "not auth")
 		}
 
-		return c.String(http.StatusOK, "ok")
+		userRepository := repository.NewUserRepository(sqlHandler)
+		user, _ := userRepository.GetUserByTwitterID(c.Request().Context(), twitterUser.ID)
+
+		if user == nil {
+			newUser := entity.User{
+				Username:      twitterUser.Username,
+				DisplayName:   twitterUser.Name,
+				TwitterUserID: twitterUser.ID,
+				IconURL:       twitterUser.ProfileImageURL,
+			}
+			user, _ = userRepository.GetUserByTwitterID(c.Request().Context(), newUser)
+		}
+
+		jwtHandler, _ := auth.NewJWTHandler()
+		jwtToken, _ := jwtHandler.GenerateJWTToken(user.ID)
+
+		// set cookie
+		cookie := new(http.Cookie)
+		cookie.Name = "token"
+		cookie.Value = jwtToken
+		cookie.Expires = time.Now().Add(24 * time.Hour)
+		c.SetCookie(cookie)
+
+		jsonMap := map[string]entity.User{
+			"user": *user,
+		}
+		return c.JSON(http.StatusOK, jsonMap)
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
