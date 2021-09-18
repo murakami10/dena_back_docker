@@ -10,3 +10,4 @@ mysql
 node_modules/
 app/out/
 app/.env
+app_chat/.env

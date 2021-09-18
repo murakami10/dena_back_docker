@@ -1,8 +1,8 @@
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-const { text } = require('express');
 const mysql = require('mysql2/promise');
+require('dotenv').config();
 
 /**
  * [イベント] ユーザーが接続
@@ -13,10 +13,10 @@ io.on('connection', async (socket) => {
   let connection;
   try {
     connection = await mysql.createConnection({
-      host: 'db',
-      user: 'user',
-      password: 'password',
-      database: 'test_database',
+      host: process.env['DB_HOST'],
+      user: process.env['DB_USER'],
+      password: process.env['DB_PASSWORD'],
+      database: process.env['DB_DATABASE'],
     });
   } catch (e) {
     console.log('connection error');
