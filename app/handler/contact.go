@@ -30,7 +30,7 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 	for _, receiver_id := range req.RequestUseIDList {
 		err := ch.contactRepository.SendContact(c.Request().Context(), sender_id, receiver_id, req.Message)
 		if err != nil {
-			return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /contact Error: %s", err.Error()))
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /api/contact Error: %s", err.Error()))
 		}
 	}
 	return c.String(http.StatusCreated, "Created")
@@ -38,8 +38,16 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 
 func (ch *ContactHandler) Get(c echo.Context) error {
 	//TODO 後でjwt使った関数に置き換える
-	// var user_id uint64 = 1
+	var user_id uint64 = 1
 
-	// ch.contactRepository.GetReceivedContact(c.Request().Context(), user_id)
-	return c.String(http.StatusOK, "OK")
+	// 受信ユーザ、受信メッセージ、受信日時を取得
+	contactItems, err := ch.contactRepository.GetReceivedContact(c.Request().Context(), user_id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("GET /api/contact Error: %s", err.Error()))
+	}
+
+	var response := &api_model.GetContactResponse{
+	}
+
+	return c.JSON(http.StatusOK, "OK")
 }
