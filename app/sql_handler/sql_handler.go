@@ -1,4 +1,4 @@
-package SQLHandler
+package sql_handler
 
 import (
 	"context"
