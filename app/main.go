@@ -9,11 +9,6 @@ import (
 	"github.com/labstack/echo"
 )
 
-type User struct {
-    Name  string `json:"name"`
-    Email string `json:"email"`
-}
-
 func main() {
 	e := echo.New()
 
