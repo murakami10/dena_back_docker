@@ -5,9 +5,11 @@ import (
 	"dena-hackathon21/entity"
 	"dena-hackathon21/repository"
 	"dena-hackathon21/twitter_handler"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -96,4 +98,30 @@ func (u UserHandler) GetTwitterSignInURL(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, jsonMap)
+}
+
+type getFriendsResponse struct {
+	User    entity.User   `json:"user"`
+	Friends []entity.User `json:"friends"`
+}
+
+func (u UserHandler) GetFrends(c echo.Context) error {
+	idStr := c.Param("id")
+	id, _ := strconv.Atoi(idStr)
+	user, _ := u.userRepository.GetUser(c.Request().Context(), uint64(id))
+	friends, err := u.userRepository.GetFriends(c.Request().Context(), uint64(id))
+
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+
+	if len(friends) == 0 {
+		friends = make([]entity.User, 0)
+	}
+
+	fmt.Printf("%v\n", friends)
+	return c.JSON(http.StatusOK, getFriendsResponse{
+		User:    *user,
+		Friends: friends,
+	})
 }

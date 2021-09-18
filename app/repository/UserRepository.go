@@ -69,3 +69,24 @@ func (u UserRepository) CreateUser(ctx context.Context, user entity.User) (*enti
 	}
 	return newUser, nil
 }
+
+func (u UserRepository) GetFriends(ctx context.Context, userID uint64) ([]entity.User, error) {
+	query := "select users.id, users.username, users.display_name, users.twitter_user_id, users.icon_url from friends JOIN users on users.id = friends.friend_user_id where friends.user_id=?"
+
+	rows, err := u.sqlHandler.QueryContext(ctx, query, userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var users []entity.User
+	for rows.Next() {
+		var user entity.User
+		err = rows.Scan(&user.ID, &user.Username, &user.DisplayName, &user.TwitterUserID, &user.IconURL)
+		users = append(users, user)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return users, nil
+}
