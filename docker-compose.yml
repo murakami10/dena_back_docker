@@ -11,6 +11,8 @@ services:
     networks:
       - backend
     command: air
+    depends_on:
+      - db
   app_chat:
     build: ./app_chat
     container_name: app_chat

@@ -6,5 +6,7 @@ CREATE TABLE `requests` (
     `reciever_id` INT NOT NULL, -- users.id
     `message` text not null,
     `created_at` datetime NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`),
+    FOREIGN key (`reciever_id`) REFERENCES `users`(`id`)
 );
