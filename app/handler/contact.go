@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"net/http"
-	"fmt"
 	"dena-hackathon21/api_model"
 	"dena-hackathon21/repository"
-	"github.com/labstack/echo"
+	"fmt"
+	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 type ContactHandler struct {

@@ -5,6 +5,8 @@ services:
     container_name: app
     ports:
       - '8080:8080'
+    env_file:
+      - app/.env
     tty: true
     volumes:
       - ./app:/app
