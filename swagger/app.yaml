@@ -25,6 +25,16 @@ paths:
           description: "Created"
       tags:
         - Contact
+    get:
+      description: "Get contact."
+      parameters: []
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/GetContactResponse"
+      tags:
+        - Contact
 
 definitions:
   SendContactRequest:
@@ -36,3 +46,28 @@ definitions:
         items: { type: integer }
       message:
         type: string
+  GetContactResponse:
+    title: GetContact
+    type: object
+    properties:
+      received_contact_list:
+        type: array
+        items:
+          $ref: "#/definitions/ContactItem"
+      past_message_list:
+        type: array
+        items:
+          $ref: "#/definitions/ContactItem"
+  ContactItem:
+    title: ContactItem
+    type: object
+    properties:
+      send_user_id:
+        type: integer
+      message:
+        type: string
+      room_id:
+        type: integer
+      send_at:
+        type: string
+        format: date-time
