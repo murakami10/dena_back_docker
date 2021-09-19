@@ -7,13 +7,16 @@ import (
 	"dena-hackathon21/sql_handler"
 	"dena-hackathon21/twitter_handler"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"os"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	e := echo.New()
+	e.Use(middleware.CORS())
 
 	sqlAuthentication := fmt.Sprintf("%s:%s@tcp(%s)/%s", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
 	sqlHandler, err := sql_handler.NewHandler(sqlAuthentication)

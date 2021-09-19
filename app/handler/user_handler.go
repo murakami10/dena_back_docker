@@ -5,12 +5,12 @@ import (
 	"dena-hackathon21/entity"
 	"dena-hackathon21/repository"
 	"dena-hackathon21/twitter_handler"
-	"fmt"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/labstack/echo/v4"
 )
 
 type UserHandler struct {
