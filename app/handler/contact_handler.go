@@ -36,14 +36,13 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 		return err
 	}
 
-	
 	for _, receiver_id := range req.RequestUseIDList {
-		// コンタクトを登録
+    // コンタクトを登録
 		err := ch.contactRepository.SendContact(c.Request().Context(), sender_id, receiver_id, req.Message)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /api/contact Error: %s", err.Error()))
 		}
-
+    
 		// ルームが無い場合は新規作成
 		is_exist, err := ch.contactRepository.IsExistRoom(c.Request().Context(), sender_id, receiver_id)
 		if err != nil {
@@ -58,7 +57,6 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 			}
 		}
 	}
-
 	return c.String(http.StatusCreated, "Created")
 }
 
