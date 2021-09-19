@@ -2,7 +2,7 @@ FROM node:14.17-buster
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package*.json .env ./
 RUN npm install
 
 # とりあえず起動したらサーバ動いているように
