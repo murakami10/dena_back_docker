@@ -30,15 +30,14 @@ func main() {
 	twitterHandler, _ := twitter_handler.NewTwitterHandler()
 	jwtHandler, _ := auth.NewJWTHandler()
 
-	contactHandler := handler.NewContactHandler(
-		repository.NewContactRepository(sqlHandler),
-	)
+	contactRepository := repository.NewContactRepository(sqlHandler)
 
 	// TODO 内容がダミーなので後で消す
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!!")
 	})
 
+	contactHandler := handler.NewContactHandler(contactRepository, jwtHandler)
 	e.POST("/api/contact", contactHandler.Send)
 	e.GET("/api/contact", contactHandler.Get)
 
