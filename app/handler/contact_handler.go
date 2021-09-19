@@ -30,15 +30,31 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 	token := cookie.Value
 	sender_id, err := ch.jwtHandler.GetUserIDFromToken(token)
 
+	// リクエスト取得
 	req := new(api_model.SendContactRequest)
 	if err := c.Bind(req); err != nil {
 		return err
 	}
 
 	for _, receiver_id := range req.RequestUseIDList {
+    // コンタクトを登録
 		err := ch.contactRepository.SendContact(c.Request().Context(), sender_id, receiver_id, req.Message)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /api/contact Error: %s", err.Error()))
+		}
+    
+		// ルームが無い場合は新規作成
+		is_exist, err := ch.contactRepository.IsExistRoom(c.Request().Context(), sender_id, receiver_id)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /api/contact Error: %s", err.Error()))
+		}
+		fmt.Println("is_exist:", is_exist)
+
+		if !is_exist {
+			err := ch.contactRepository.CreateRoom(c.Request().Context(), sender_id, receiver_id, req.Message)
+			if err != nil {
+				return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /api/contact Error: %s", err.Error()))
+			}
 		}
 	}
 	return c.String(http.StatusCreated, "Created")
