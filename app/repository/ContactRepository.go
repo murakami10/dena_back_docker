@@ -28,6 +28,10 @@ func (c ContactRepository) SendContact(ctx context.Context, sender_id uint64, re
 	return nil
 }
 
+func (c ContactRepository) IsExistRoom(ctx context.Context, sender_id uint64, receiver_id uint64) (bool, error) {
+	return false, nil
+}
+
 func (c ContactRepository) GetReceivedContact(ctx context.Context, user_id uint64) ([]api_model.ContactItem, error) {
 	var contactItemList []api_model.ContactItem
 	

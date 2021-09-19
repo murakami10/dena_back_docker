@@ -23,24 +23,36 @@ func NewContactHandler(contactRepository *repository.ContactRepository, jwtHandl
 
 func (ch *ContactHandler) Send(c echo.Context) error {
 	// ユーザIDを取得
-	cookie, err := c.Cookie("token")
-	if err != nil {
-		return c.String(500, err.Error())
-	}
-	token := cookie.Value
-	sender_id, err := ch.jwtHandler.GetUserIDFromToken(token)
+	// cookie, err := c.Cookie("token")
+	// if err != nil {
+	// 	return c.String(500, err.Error())
+	// }
+	// token := cookie.Value
+	// sender_id, err := ch.jwtHandler.GetUserIDFromToken(token)
+	var sender_id uint64 = 1
 
+	// リクエスト取得
 	req := new(api_model.SendContactRequest)
 	if err := c.Bind(req); err != nil {
 		return err
 	}
 
+	
 	for _, receiver_id := range req.RequestUseIDList {
+		// コンタクトを登録
 		err := ch.contactRepository.SendContact(c.Request().Context(), sender_id, receiver_id, req.Message)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /api/contact Error: %s", err.Error()))
 		}
+
+		// ルームが無い場合は新規作成
+		is_exist, err := ch.contactRepository.IsExistRoom(c.Request().Context(), sender_id, receiver_id)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /api/contact Error: %s", err.Error()))
+		}
+		fmt.Println("is_exist:", is_exist)
 	}
+
 	return c.String(http.StatusCreated, "Created")
 }
 
