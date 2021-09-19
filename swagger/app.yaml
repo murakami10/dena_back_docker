@@ -26,7 +26,7 @@ paths:
       description: twitter_signin_url
       operationId: signinUrRL
       tags:
-        - Autentication
+        - Authentication
       responses:
         '200':
           description: user response
@@ -50,7 +50,7 @@ paths:
       description: twitter_signup_url
       operationId: signupUrRL
       tags:
-        - Autentication
+        - Authentication
       responses:
         '200':
           description: user response
@@ -74,7 +74,7 @@ paths:
       description: signup
       operationId: signup
       tags:
-        - Autentication
+        - Authentication
       requestBody:
         description: oauth tokens
         required: true
@@ -108,7 +108,7 @@ paths:
       description: signin
       operationId: signin
       tags:
-        - Autentication
+        - Authentication
       requestBody:
         description:  oauth tokens
         required: true
@@ -163,6 +163,22 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/User'
+  /api/users/session:
+    get:
+      description: get session from token in cookie
+      operationId: getSession
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
 
 components:
   schemas:

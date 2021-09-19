@@ -67,6 +67,7 @@ func (u UserHandler) SignIn(c echo.Context) error {
 	cookie.Name = "token"
 	cookie.Value = jwtToken
 	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.Path = "/"
 	c.SetCookie(cookie)
 
 	jsonMap := map[string]entity.User{
@@ -123,4 +124,27 @@ func (u UserHandler) GetFrends(c echo.Context) error {
 		User:    *user,
 		Friends: friends,
 	})
+}
+
+func (u UserHandler) GetSession(c echo.Context) error {
+	cookie, err := c.Cookie("token")
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	token := cookie.Value
+	fmt.Println(token)
+
+	userID, err := u.jwtHandler.GetUserIDFromToken(token)
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	user, err := u.userRepository.GetUser(c.Request().Context(), userID)
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+
+	jsonMap := map[string]entity.User{
+		"user": *user,
+	}
+	return c.JSON(http.StatusOK, jsonMap)
 }
