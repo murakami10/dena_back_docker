@@ -54,7 +54,7 @@ func (u UserRepository) GetUserByTwitterID(ctx context.Context, twitterID string
 }
 
 func (u UserRepository) CreateUser(ctx context.Context, user entity.User) (*entity.User, error) {
-	query := `insert into Users (username, display_name, twitter_user_id, icon_url) values (?, ?, ?, ?)`
+	query := `insert into users (username, display_name, twitter_user_id, icon_url) values (?, ?, ?, ?)`
 
 	_, err := u.sqlHandler.QueryContext(ctx, query, user.Username, user.DisplayName, user.TwitterUserID, user.IconURL)
 
