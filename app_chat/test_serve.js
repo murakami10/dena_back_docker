@@ -23,3 +23,7 @@ socket.emit('join', { user_id: 3, room: 2 });
 socket.on('join-response', (msg) => {
   console.log(msg);
 });
+
+socket.emit('post', { user_id: 1, room: 1, message: 'あいうえお' });
+socket.emit('post', { user_id: 2, room: 1, message: 'かきくけこ' });
+socket.emit('post', { user_id: 3, room: 2, message: 'たちつてと' });

@@ -71,6 +71,8 @@ definitions:
     get:
       description: twitter_signin_url
       operationId: signinUrRL
+      tags:
+        - Autentication
       responses:
         "200":
           description: user response
@@ -93,6 +95,8 @@ definitions:
     get:
       description: twitter_signup_url
       operationId: signupUrRL
+      tags:
+        - Autentication
       responses:
         "200":
           description: user response
@@ -115,6 +119,8 @@ definitions:
     post:
       description: signup
       operationId: signup
+      tags:
+        - Autentication
       requestBody:
         description: oauth tokens
         required: true
@@ -147,6 +153,8 @@ definitions:
     post:
       description: signin
       operationId: signin
+      tags:
+        - Autentication
       requestBody:
         description: oauth tokens
         required: true
@@ -174,6 +182,33 @@ definitions:
                 properties:
                   user:
                     $ref: "#/components/schemas/User"
+  /api/users/{userId}/friends:
+    get:
+      description: get friend
+      operationId: getFriend
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user to get
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  friends:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
 
 components:
   schemas:

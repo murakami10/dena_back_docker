@@ -7,15 +7,19 @@ import (
 	"dena-hackathon21/sql_handler"
 	"dena-hackathon21/twitter_handler"
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"net/http"
+	"os"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	e := echo.New()
+	e.Use(middleware.CORS())
 
-	// TODO 環境変数から取りたい
-	sqlHandler, err := sql_handler.NewHandler("user:password@tcp(db:3306)/test_database")
+	sqlAuthentication := fmt.Sprintf("%s:%s@tcp(%s)/%s", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
+	sqlHandler, err := sql_handler.NewHandler(sqlAuthentication)
 
 	if err != nil {
 		fmt.Printf("connect error: %s\n", err.Error())
@@ -58,5 +62,7 @@ func main() {
 	e.POST("/api/users/signin", userHandler.SignIn)
 	e.POST("/api/users/signup", userHandler.SignIn)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.GET("/api/users/:id/frends", userHandler.GetFrends)
+
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }

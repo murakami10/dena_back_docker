@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>SocketIOチャット</title>
+  </head>
+  <body>
+    <h1>SocketIOチャット</h1>
+
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script
+      src="https://cdn.socket.io/4.1.2/socket.io.min.js"
+      integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      //-------------------------------------
+      // Socket.ioサーバへ接続
+      //-------------------------------------
+
+      // localhostの3000ポートに繋げる
+      const socket = io('http://localhost:3000', { transports: ['websocket'] });
+
+      // joinするときの動作
+      // socket.emit('join', { user_id: 1, room: 1 });
+      socket.on('join-response', (msg) => {
+        console.log(msg);
+      });
+
+      socket.on('post-response', (msg) => {
+        console.log(msg);
+      });
+    </script>
+  </body>
+</html>
