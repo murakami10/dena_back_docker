@@ -13,7 +13,12 @@ docker exec -it <go-container-id> go mod tidy
 
 ## swagger 
 ```
-docker-compose  -f docker-compose-swagger.yml up -d
+docker-compose -f docker-compose-swagger.yml up -d
+```
+
+## for production 
+```
+docker-compose -f docker-compose-release.yml up -d
 ```
 
 ## MySQL で DB やテーブルが生やされない時
