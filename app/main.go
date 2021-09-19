@@ -40,8 +40,6 @@ func main() {
 	})
 
 	e.POST("/api/contact", contactHandler.Send)
-
-	// TODO issue-7
 	e.GET("/api/contact", contactHandler.Get)
 
 	// TODO 疎通確認用なので後で消す
