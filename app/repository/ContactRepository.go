@@ -89,3 +89,27 @@ func (c ContactRepository) GetPastContact(ctx context.Context, user_id uint64) (
 	
 	return contactItemList, nil
 }
+
+func (c ContactRepository) GetRoomId(ctx context.Context, user_id uint64, sender_id uint64) (uint64, error) {
+	var roomId uint64
+	
+	query := `
+	select c. room_id 
+	from chats as c 
+	inner join room_members as m on 
+	c.room_id = m.room_id 
+	where m.user_id = ? and c.sender_id =?;
+	`
+	rows, err := c.sqlHandler.QueryContext(ctx, query, user_id, sender_id)
+	if err != nil {
+		return 0, err
+	}
+
+	rows.Next()
+	err = rows.Scan(&roomId)
+	if err != nil {
+		return 0, err
+	}
+	
+	return roomId, nil
+}
