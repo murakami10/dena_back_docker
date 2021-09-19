@@ -2,6 +2,7 @@ const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const mysql = require('mysql2/promise');
+require('dotenv').config();
 
 /**
  * [イベント] ユーザーが接続
@@ -12,22 +13,21 @@ io.on('connection', async (socket) => {
   let connection;
   try {
     connection = await mysql.createConnection({
-      host: 'db',
-      user: 'user',
-      password: 'password',
-      database: 'test_database',
+      host: process.env['DB_HOST'],
+      user: process.env['DB_USER'],
+      password: process.env['DB_PASSWORD'],
+      database: process.env['DB_DATABASE'],
     });
   } catch (e) {
     console.log('connection error');
     console.log(e);
-    exit;
+    return;
   }
 
   socket.on('join', async (req) => {
     // user認証!!!!!!!!!!!!!!
 
     // userがroom_idに所属しているか確認
-
     try {
       let [results, _] = await connection.execute(
         'SELECT 1 FROM `room_members` WHERE `room_id` = ? AND `user_id` = ? ',
@@ -40,6 +40,7 @@ io.on('connection', async (socket) => {
     } catch (e) {
       console.log(e);
       // io.emit('join-response', { error: 'Internal error' });
+      return;
     }
 
     let chats = [];
@@ -48,7 +49,7 @@ io.on('connection', async (socket) => {
     try {
       // 過去のチャットを取得
       let [results, _] = await connection.execute(
-        'SELECT `text`, `sender_id`, `created_at` FROM `chats` WHERE `room_id` = ? ',
+        'SELECT `id`, `text`, `sender_id`, `created_at` FROM `chats` WHERE `room_id` = ? ',
         [req.room]
       );
       chats = Object.values(JSON.parse(JSON.stringify(results)));
@@ -68,6 +69,7 @@ io.on('connection', async (socket) => {
     } catch (e) {
       console.log(e);
       // io.emit('join-response', { error: 'Internal error' });
+      return;
     }
 
     res = { chats, user_ids };
@@ -81,14 +83,53 @@ io.on('connection', async (socket) => {
     io.to(req.room).emit('join-response', res);
   });
 
-  socket.on('post', (req) => {
-    io.to(req.room).emit('join-response', 'aaa');
+  socket.on('post', async (req) => {
+    const sender_id = req.user_id;
+    const room_id = req.room;
+    const text = req.message;
+
+    // user認証!!!!!!!!!!!!!!
+
+    // userがroom_idに所属しているか確認
+    try {
+      let [results, _] = await connection.execute(
+        'SELECT 1 FROM `room_members` WHERE `room_id` = ? AND `user_id` = ? ',
+        [room_id, sender_id]
+      );
+      if (results.length != 1) {
+        return;
+      }
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+
+    // chatにmessageを追加する
+    try {
+      let [results, _] = await connection.execute(
+        'INSERT INTO `chats` (`room_id`, `sender_id`, `text`) VALUES (?, ?, ?);',
+        [room_id, sender_id, text]
+      );
+
+      // insertしたcolumnを取得する
+      const id = results['insertId'];
+      [results, _] = await connection.execute(
+        'SELECT `id`, `text`, `sender_id`, `created_at` FROM `chats` WHERE `id` = ? ',
+        [id]
+      );
+      chats = Object.values(JSON.parse(JSON.stringify(results)))[0];
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+
+    io.to(req.room).emit('post-response', chats);
   });
 });
 
 /**
  * 3000番でサーバを起動する
  */
-http.listen(3000, () => {
-  console.log('listening on *:3000');
+http.listen(process.env['SERVER_PORT'], () => {
+  console.log('listening on *:' + process.env['SERVER_PORT']);
 });

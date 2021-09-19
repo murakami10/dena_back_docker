@@ -5,12 +5,12 @@ import (
 	"dena-hackathon21/entity"
 	"dena-hackathon21/repository"
 	"dena-hackathon21/twitter_handler"
-	"fmt"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/labstack/echo/v4"
 )
 
 type UserHandler struct {
@@ -78,7 +78,7 @@ func (u UserHandler) SignIn(c echo.Context) error {
 
 func (u UserHandler) GetTwitterSignUpURL(c echo.Context) error {
 
-	token, secret, _ := u.twitterHandler.GetRequestToken()
+	token, secret, _ := u.twitterHandler.GetRequestToken(os.Getenv("SIGNUP_CALLBACK_URL"))
 	url, _ := u.twitterHandler.GetAuthorizationURL(token, os.Getenv("SIGNUP_CALLBACK_URL"))
 	jsonMap := map[string]string{
 		"url":          url.String(),
@@ -90,7 +90,7 @@ func (u UserHandler) GetTwitterSignUpURL(c echo.Context) error {
 
 func (u UserHandler) GetTwitterSignInURL(c echo.Context) error {
 
-	token, secret, _ := u.twitterHandler.GetRequestToken()
+	token, secret, _ := u.twitterHandler.GetRequestToken(os.Getenv("SIGNIN_CALLBACK_URL"))
 	url, _ := u.twitterHandler.GetAuthorizationURL(token, os.Getenv("SIGNIN_CALLBACK_URL"))
 	jsonMap := map[string]string{
 		"url":          url.String(),
