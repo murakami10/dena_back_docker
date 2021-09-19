@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"context"
 	"dena-hackathon21/api_model"
 	"dena-hackathon21/sql_handler"
@@ -30,11 +31,7 @@ func (c ContactRepository) SendContact(ctx context.Context, sender_id uint64, re
 
 func (c ContactRepository) IsExistRoom(ctx context.Context, sender_id uint64, receiver_id uint64) (bool, error) {
 	query := `
-	select m.room_id 
-	from chats as c 
-	inner join room_members as m 
-	on c.room_id = m.room_id 
-	where c.sender_id = ? and m.user_id = ?;
+	select room_id from room_members where user_id in (?, ?) group by room_id having count(*) >= 2;
 	`
 	rows, err := c.sqlHandler.QueryContext(ctx, query, sender_id, receiver_id)
 	if err != nil {
@@ -49,6 +46,58 @@ func (c ContactRepository) IsExistRoom(ctx context.Context, sender_id uint64, re
 		// Roomがあった場合
 		return true, nil
 	}
+}
+
+func (c ContactRepository) CreateRoom(ctx context.Context, sender_id uint64, receiver_id uint64, message string) error {
+	// ルームを作成
+	query := `
+	insert into rooms values ();
+	`
+	_, err := c.sqlHandler.QueryContext(ctx, query)
+	if err != nil {
+		fmt.Println("Create Room Error:", err)
+		return err
+	}
+
+	// ルームIDを取得
+	// TODO lastinsertidを使う
+	var roomId uint64
+	query = `
+	select max(id) from rooms;
+	`
+	rows, err := c.sqlHandler.QueryContext(ctx, query)
+	rows.Next()
+	err = rows.Scan(&roomId)
+	if err != nil {
+		fmt.Println("Get RoomID Error:", err)
+		return err
+	}
+
+	// RoomIDとuser_idを紐づける
+	query = `
+	insert into room_members (user_id, room_id) values (?, ?);
+	`
+	_, err = c.sqlHandler.QueryContext(ctx, query, sender_id, roomId)
+	if err != nil {
+		fmt.Println("Insert room_members Error:", err)
+		return err
+	}
+	_, err = c.sqlHandler.QueryContext(ctx, query, receiver_id, roomId)
+	if err != nil {
+		fmt.Println("Insert room_members Error:", err)
+		return err
+	}
+
+	// Chatsテーブルにレコードを追加
+	query = `
+	insert into chats (room_id, sender_id, text) values (?, ?, ?);
+	`
+	_, err = c.sqlHandler.QueryContext(ctx, query, roomId, sender_id, message)
+	if err != nil {
+		fmt.Println("Insert chats Error:", err)
+		return err
+	}
+	return nil
 }
 
 func (c ContactRepository) GetReceivedContact(ctx context.Context, user_id uint64) ([]api_model.ContactItem, error) {

@@ -23,13 +23,12 @@ func NewContactHandler(contactRepository *repository.ContactRepository, jwtHandl
 
 func (ch *ContactHandler) Send(c echo.Context) error {
 	// ユーザIDを取得
-	// cookie, err := c.Cookie("token")
-	// if err != nil {
-	// 	return c.String(500, err.Error())
-	// }
-	// token := cookie.Value
-	// sender_id, err := ch.jwtHandler.GetUserIDFromToken(token)
-	var sender_id uint64 = 1
+	cookie, err := c.Cookie("token")
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	token := cookie.Value
+	sender_id, err := ch.jwtHandler.GetUserIDFromToken(token)
 
 	// リクエスト取得
 	req := new(api_model.SendContactRequest)
@@ -51,6 +50,13 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /api/contact Error: %s", err.Error()))
 		}
 		fmt.Println("is_exist:", is_exist)
+
+		if !is_exist {
+			err := ch.contactRepository.CreateRoom(c.Request().Context(), sender_id, receiver_id, req.Message)
+			if err != nil {
+				return c.String(http.StatusInternalServerError, fmt.Sprintf("POST /api/contact Error: %s", err.Error()))
+			}
+		}
 	}
 
 	return c.String(http.StatusCreated, "Created")
