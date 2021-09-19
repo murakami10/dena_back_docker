@@ -22,8 +22,13 @@ func NewContactHandler(contactRepository *repository.ContactRepository, jwtHandl
 }
 
 func (ch *ContactHandler) Send(c echo.Context) error {
-	//TODO 後でjwt使った関数に置き換える
-	var sender_id uint64 = 1
+	// ユーザIDを取得
+	cookie, err := c.Cookie("token")
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	token := cookie.Value
+	sender_id, err := ch.jwtHandler.GetUserIDFromToken(token)
 
 	req := new(api_model.SendContactRequest)
 	if err := c.Bind(req); err != nil {
