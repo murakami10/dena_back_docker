@@ -38,8 +38,8 @@ func main() {
 	})
 
 	contactHandler := handler.NewContactHandler(contactRepository, jwtHandler)
-	e.POST("/api/contact", contactHandler.Send)
-	e.GET("/api/contact", contactHandler.Get)
+	e.POST("/api/contacts/:id", contactHandler.Send)
+	e.GET("/api/contacts/:id", contactHandler.Get)
 
 	// TODO 疎通確認用なので後で消す
 	e.GET("/users/1", func(c echo.Context) error {

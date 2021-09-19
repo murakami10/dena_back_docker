@@ -87,16 +87,6 @@ func (c ContactRepository) CreateRoom(ctx context.Context, sender_id uint64, rec
 		fmt.Println("Insert room_members Error:", err)
 		return err
 	}
-
-	// Chatsテーブルにレコードを追加
-	query = `
-	insert into chats (room_id, sender_id, text) values (?, ?, ?);
-	`
-	_, err = c.sqlHandler.QueryContext(ctx, query, roomId, sender_id, message)
-	if err != nil {
-		fmt.Println("Insert chats Error:", err)
-		return err
-	}
 	return nil
 }
 
