@@ -107,7 +107,7 @@ io.on('connection', async (socket) => {
     // chatにmessageを追加する
     try {
       let [results, _] = await connection.execute(
-        'INSERT INTO `chats` (`room_id`, `sender_id`, `text`) VALUES (?, ?, ?);', // created_at と idを返す
+        'INSERT INTO `chats` (`room_id`, `sender_id`, `text`) VALUES (?, ?, ?);',
         [room_id, sender_id, text]
       );
 
