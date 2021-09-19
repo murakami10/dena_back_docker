@@ -42,9 +42,7 @@ func main() {
 	e.POST("/api/contact", contactHandler.Send)
 
 	// TODO issue-7
-	e.GET("/api/contact", func(c echo.Context) error {
-		return c.String(http.StatusOK, "OK")
-	})
+	e.GET("/api/contact", contactHandler.Get)
 
 	// TODO 疎通確認用なので後で消す
 	e.GET("/users/1", func(c echo.Context) error {
