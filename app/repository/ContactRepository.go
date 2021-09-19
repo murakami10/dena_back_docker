@@ -102,11 +102,10 @@ func (c ContactRepository) CreateRoom(ctx context.Context, sender_id uint64, rec
 
 func (c ContactRepository) GetReceivedContact(ctx context.Context, user_id uint64) ([]api_model.ContactItem, error) {
 	var contactItemList []api_model.ContactItem
-	
 	query := `
 	select sender_id, message, created_at
 	from requests
-	where receiver_id = ?
+	where receiver_id = ? and created_at > CURRENT_TIMESTAMP - INTERVAL 15 MINUTE;
 	`
 	rows, err := c.sqlHandler.QueryContext(ctx, query, user_id)
 	if err != nil {
