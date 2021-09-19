@@ -3,6 +3,7 @@ package handler
 import (
 	"dena-hackathon21/api_model"
 	"dena-hackathon21/repository"
+	"dena-hackathon21/auth"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -10,11 +11,13 @@ import (
 
 type ContactHandler struct {
 	contactRepository *repository.ContactRepository
+	jwtHandler        *auth.JWTHandler
 }
 
-func NewContactHandler(contactRepository *repository.ContactRepository) *ContactHandler {
+func NewContactHandler(contactRepository *repository.ContactRepository, jwtHandler *auth.JWTHandler) *ContactHandler {
 	return &ContactHandler{
 		contactRepository: contactRepository,
+		jwtHandler:        jwtHandler,
 	}
 }
 
@@ -37,8 +40,13 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 }
 
 func (ch *ContactHandler) Get(c echo.Context) error {
-	//TODO 後でjwt使った関数に置き換える
-	var user_id uint64 = 1
+	// ユーザIDを取得
+	cookie, err := c.Cookie("token")
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	token := cookie.Value
+	user_id, err := ch.jwtHandler.GetUserIDFromToken(token)
 
 	// 受信ユーザ、受信メッセージ、その受信日時を取得
 	receivedContactItemList, err := ch.contactRepository.GetReceivedContact(c.Request().Context(), user_id)
