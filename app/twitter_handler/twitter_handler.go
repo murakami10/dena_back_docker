@@ -2,11 +2,12 @@ package twitter_handler
 
 import (
 	"dena-hackathon21/entity"
+	"net/url"
+	"os"
+
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	oauth1Twitter "github.com/dghubble/oauth1/twitter"
-	"net/url"
-	"os"
 )
 
 type TwitterHandler struct {
@@ -25,7 +26,8 @@ func NewTwitterHandler() (*TwitterHandler, error) {
 	}, nil
 }
 
-func (t TwitterHandler) GetRequestToken() (string, string, error) {
+func (t TwitterHandler) GetRequestToken(callbackURL string) (string, string, error) {
+	t.oauth1Config.CallbackURL = callbackURL
 	requestToken, requestSecret, err := t.oauth1Config.RequestToken()
 	return requestToken, requestSecret, err
 }

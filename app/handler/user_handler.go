@@ -77,7 +77,7 @@ func (u UserHandler) SignIn(c echo.Context) error {
 
 func (u UserHandler) GetTwitterSignUpURL(c echo.Context) error {
 
-	token, secret, _ := u.twitterHandler.GetRequestToken()
+	token, secret, _ := u.twitterHandler.GetRequestToken(os.Getenv("SIGNUP_CALLBACK_URL"))
 	url, _ := u.twitterHandler.GetAuthorizationURL(token, os.Getenv("SIGNUP_CALLBACK_URL"))
 	jsonMap := map[string]string{
 		"url":          url.String(),
@@ -89,7 +89,7 @@ func (u UserHandler) GetTwitterSignUpURL(c echo.Context) error {
 
 func (u UserHandler) GetTwitterSignInURL(c echo.Context) error {
 
-	token, secret, _ := u.twitterHandler.GetRequestToken()
+	token, secret, _ := u.twitterHandler.GetRequestToken(os.Getenv("SIGNIN_CALLBACK_URL"))
 	url, _ := u.twitterHandler.GetAuthorizationURL(token, os.Getenv("SIGNIN_CALLBACK_URL"))
 	jsonMap := map[string]string{
 		"url":          url.String(),
