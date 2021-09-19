@@ -38,15 +38,24 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 
 func (ch *ContactHandler) Get(c echo.Context) error {
 	//TODO 後でjwt使った関数に置き換える
-	var user_id uint64 = 1
+	var user_id uint64 = 2
 
-	// 受信ユーザ、受信メッセージ、受信日時を取得
-	_, err := ch.contactRepository.GetReceivedContact(c.Request().Context(), user_id)
+	// 受信ユーザ、受信メッセージ、その受信日時を取得
+	receivedContactItemList, err := ch.contactRepository.GetReceivedContact(c.Request().Context(), user_id)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("GET /api/contact Error: %s", err.Error()))
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("GET /api/contact Error (receivedContactItemList): %s", err.Error()))
 	}
 
-	res := &api_model.GetContactResponse{}
+	// 受信ユーザ、最新のメッセージ、その受信日時を取得
+	pastContactItemList, err := ch.contactRepository.GetPastContact(c.Request().Context(), user_id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("GET /api/contact Error (pastContactItemList): %s", err.Error()))
+	}
+
+	// レスポンスを作成
+	var res api_model.GetContactResponse
+	res.ReceivedContactList = receivedContactItemList
+	res.PastMessageList = pastContactItemList
 
 	return c.JSON(http.StatusOK, res)
 }
