@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
 type ContactHandler struct {
@@ -23,12 +24,8 @@ func NewContactHandler(contactRepository *repository.ContactRepository, jwtHandl
 
 func (ch *ContactHandler) Send(c echo.Context) error {
 	// ユーザIDを取得
-	cookie, err := c.Cookie("token")
-	if err != nil {
-		return c.String(500, err.Error())
-	}
-	token := cookie.Value
-	sender_id, err := ch.jwtHandler.GetUserIDFromToken(token)
+	_sender_id, _ := strconv.Atoi(c.Param("id"))
+	var sender_id uint64 = uint64(_sender_id)
 
 	// リクエスト取得
 	req := new(api_model.SendContactRequest)
@@ -62,12 +59,8 @@ func (ch *ContactHandler) Send(c echo.Context) error {
 
 func (ch *ContactHandler) Get(c echo.Context) error {
 	// ユーザIDを取得
-	cookie, err := c.Cookie("token")
-	if err != nil {
-		return c.String(500, err.Error())
-	}
-	token := cookie.Value
-	user_id, err := ch.jwtHandler.GetUserIDFromToken(token)
+	_user_id, _ := strconv.Atoi(c.Param("id"))
+	var user_id uint64 = uint64(_user_id)
 
 	// 受信ユーザ、受信メッセージ、その受信日時を取得
 	receivedContactItemList, err := ch.contactRepository.GetReceivedContact(c.Request().Context(), user_id)
