@@ -67,6 +67,7 @@ func (u UserHandler) SignIn(c echo.Context) error {
 	cookie.Name = "token"
 	cookie.Value = jwtToken
 	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.Path = "/"
 	c.SetCookie(cookie)
 
 	jsonMap := map[string]entity.User{
@@ -77,7 +78,7 @@ func (u UserHandler) SignIn(c echo.Context) error {
 
 func (u UserHandler) GetTwitterSignUpURL(c echo.Context) error {
 
-	token, secret, _ := u.twitterHandler.GetRequestToken()
+	token, secret, _ := u.twitterHandler.GetRequestToken(os.Getenv("SIGNUP_CALLBACK_URL"))
 	url, _ := u.twitterHandler.GetAuthorizationURL(token, os.Getenv("SIGNUP_CALLBACK_URL"))
 	jsonMap := map[string]string{
 		"url":          url.String(),
@@ -89,7 +90,7 @@ func (u UserHandler) GetTwitterSignUpURL(c echo.Context) error {
 
 func (u UserHandler) GetTwitterSignInURL(c echo.Context) error {
 
-	token, secret, _ := u.twitterHandler.GetRequestToken()
+	token, secret, _ := u.twitterHandler.GetRequestToken(os.Getenv("SIGNIN_CALLBACK_URL"))
 	url, _ := u.twitterHandler.GetAuthorizationURL(token, os.Getenv("SIGNIN_CALLBACK_URL"))
 	jsonMap := map[string]string{
 		"url":          url.String(),
@@ -123,4 +124,26 @@ func (u UserHandler) GetFrends(c echo.Context) error {
 		User:    *user,
 		Friends: friends,
 	})
+}
+
+func (u UserHandler) GetSession(c echo.Context) error {
+	cookie, err := c.Cookie("token")
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	token := cookie.Value
+
+	userID, err := u.jwtHandler.GetUserIDFromToken(token)
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	user, err := u.userRepository.GetUser(c.Request().Context(), userID)
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+
+	jsonMap := map[string]entity.User{
+		"user": *user,
+	}
+	return c.JSON(http.StatusOK, jsonMap)
 }

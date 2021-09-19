@@ -1,5 +1,8 @@
 ## 初回手順
 
+- app/.env.defaultをapp/.envに変更し、適切な値を設定する.
+- app_chat/.env.defaultをapp_chat/.envに変更し、適切な値に変更する.
+
 ```
 $ docker-compose build
 $ docker-compose up

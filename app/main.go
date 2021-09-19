@@ -61,5 +61,7 @@ func main() {
 
 	e.GET("/api/users/:id/frends", userHandler.GetFrends)
 
+	e.GET("/api/users/session", userHandler.GetSession)
+
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }

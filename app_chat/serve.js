@@ -49,7 +49,7 @@ io.on('connection', async (socket) => {
     try {
       // 過去のチャットを取得
       let [results, _] = await connection.execute(
-        'SELECT `text`, `sender_id`, `created_at` FROM `chats` WHERE `room_id` = ? ',
+        'SELECT `id`, `text`, `sender_id`, `created_at` FROM `chats` WHERE `room_id` = ? ',
         [req.room]
       );
       chats = Object.values(JSON.parse(JSON.stringify(results)));
@@ -110,21 +110,26 @@ io.on('connection', async (socket) => {
         'INSERT INTO `chats` (`room_id`, `sender_id`, `text`) VALUES (?, ?, ?);',
         [room_id, sender_id, text]
       );
+
+      // insertしたcolumnを取得する
+      const id = results['insertId'];
+      [results, _] = await connection.execute(
+        'SELECT `id`, `text`, `sender_id`, `created_at` FROM `chats` WHERE `id` = ? ',
+        [id]
+      );
+      chats = Object.values(JSON.parse(JSON.stringify(results)))[0];
     } catch (e) {
       console.log(e);
       return;
     }
 
-    io.to(req.room).emit('post-response', {
-      message: text,
-      sender_id: sender_id,
-    });
+    io.to(req.room).emit('post-response', chats);
   });
 });
 
 /**
  * 3000番でサーバを起動する
  */
-http.listen(3000, () => {
-  console.log('listening on *:3000');
+http.listen(process.env['SERVER_PORT'], () => {
+  console.log('listening on *:' + process.env['SERVER_PORT']);
 });
