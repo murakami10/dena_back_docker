@@ -132,7 +132,6 @@ func (u UserHandler) GetSession(c echo.Context) error {
 		return c.String(500, err.Error())
 	}
 	token := cookie.Value
-	fmt.Println(token)
 
 	userID, err := u.jwtHandler.GetUserIDFromToken(token)
 	if err != nil {
