@@ -29,7 +29,26 @@ func (c ContactRepository) SendContact(ctx context.Context, sender_id uint64, re
 }
 
 func (c ContactRepository) IsExistRoom(ctx context.Context, sender_id uint64, receiver_id uint64) (bool, error) {
-	return false, nil
+	query := `
+	select m.room_id 
+	from chats as c 
+	inner join room_members as m 
+	on c.room_id = m.room_id 
+	where c.sender_id = ? and m.user_id = ?;
+	`
+	rows, err := c.sqlHandler.QueryContext(ctx, query, sender_id, receiver_id)
+	if err != nil {
+		return false, err
+	}
+
+	// TODO 準備中エラーと区別
+	if ok := rows.Next(); !ok {
+		// Roomが無かった場合
+		return false, nil
+	} else {
+		// Roomがあった場合
+		return true, nil
+	}
 }
 
 func (c ContactRepository) GetReceivedContact(ctx context.Context, user_id uint64) ([]api_model.ContactItem, error) {
