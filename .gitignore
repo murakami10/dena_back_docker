@@ -11,3 +11,5 @@ node_modules/
 app/out/
 
 *.env
+
+frontend/*
