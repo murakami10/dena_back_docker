@@ -61,5 +61,7 @@ func main() {
 	e.POST("/api/users/signin", userHandler.SignIn)
 	e.POST("/api/users/signup", userHandler.SignIn)
 
+	e.GET("/api/users/:id/frends", userHandler.GetFrends)
+
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }

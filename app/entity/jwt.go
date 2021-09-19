@@ -54,7 +54,6 @@ func ParseJwtToken(signedString string, signingMethod jwt.SigningMethod, secret 
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
-	fmt.Printf("%+v", claims)
 	if !ok {
 		return nil, fmt.Errorf("not found claims in %s", signedString)
 	}
